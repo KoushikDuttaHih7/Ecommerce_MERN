@@ -6,18 +6,27 @@ const {
   deleteProduct,
   getProductDetails,
 } = require("../controllers/productController");
-const { isAuthenticatedUser } = require("../middleware/authMiddleware");
+const {
+  isAuthenticatedUser,
+  authorizeRoles,
+} = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 // Get All Products
-router.route("/products").get(isAuthenticatedUser, getAllproducts);
+router.route("/products").get(getAllproducts);
 // Create a Product
-router.route("/product/new").post(createProduct);
+router
+  .route("/product/new")
+  .post(isAuthenticatedUser, authorizeRoles("admin"), createProduct);
 // Update a Product
-router.route("/product/:id").put(updateProduct);
+router
+  .route("/product/:id")
+  .put(isAuthenticatedUser, authorizeRoles("admin"), updateProduct);
 // Delete a Product
-router.route("/product/:id").delete(deleteProduct);
+router
+  .route("/product/:id")
+  .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteProduct);
 // Get a single Product
 router.route("/product/:id").get(getProductDetails);
 
